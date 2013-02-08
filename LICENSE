@@ -30,5 +30,8 @@ libraries. The externally maintained libraries used by Arrow are:
 - Google's cpplint.py, located at vendor/cpplint.py. This code is copyrighted by
     Google Inc. and released under a 3-clause BSD license.
 
+- Google's Google Test framework, located at vendor/gtest. This code is
+    copyrighted by Google Inc. and released under a 3-clause BSD license.
+
 These libraries have their own licenses; we recommend you read them, as their
 terms may differ from the terms of Arrow.
