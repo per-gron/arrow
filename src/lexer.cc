@@ -130,8 +130,8 @@ void Lexer::handleNewline(char32_t chr,
   }
 }
 
-void Lexer::lexEndOfNumber(Lexer::NumberType type,
-                           int precision,
+void Lexer::lexEndOfNumber(const Optional<NumberType> type,
+                           const Optional<int>& precision,
                            char32_t chr) {
   if (isSymbolChar(chr)) {
     _recv->error(makePosition(),
@@ -403,7 +403,7 @@ void Lexer::lexChar(char32_t chr) {
       } else if ('f' == chr || 'F' == chr) {
         _state = State::GOT_NUMBER_TYPE_F;
       } else {
-        lexEndOfNumber(NumberType::P_UNSPECIFIED, -1, chr);
+        lexEndOfNumber(Optional<NumberType>(), Optional<int>(), chr);
       }
       break;
 
@@ -510,16 +510,16 @@ void Lexer::lexChar(char32_t chr) {
       } else {
         NumberType type;
         if (State::GOT_NUMBER_TYPE_I == _state) {
-          type = NumberType::P_SIGNED;
+          type = NumberType::SIGNED;
         } else if (State::GOT_NUMBER_TYPE_U == _state) {
-          type = NumberType::P_UNSIGNED;
+          type = NumberType::UNSIGNED;
         } else if (State::GOT_NUMBER_TYPE_F == _state) {
-          type = NumberType::P_IMPRECISE;
+          type = NumberType::IMPRECISE;
         } else {
           ARW_ASSERT(0);
         }
 
-        lexEndOfNumber(type, -1, chr);
+        lexEndOfNumber(Optional<NumberType>(type), Optional<int>(), chr);
       }
       break;
 
@@ -556,21 +556,25 @@ void Lexer::lexChar(char32_t chr) {
       {
         NumberType type;
         if (isNumberPrecision(_state, 'i')) {
-          type = NumberType::P_SIGNED;
+          type = NumberType::SIGNED;
         } else if (isNumberPrecision(_state, 'u')) {
-          type = NumberType::P_UNSIGNED;
+          type = NumberType::UNSIGNED;
         } else if (isNumberPrecision(_state, 'f')) {
-          type = NumberType::P_IMPRECISE;
+          type = NumberType::IMPRECISE;
         } else {
           ARW_ASSERT(0);
         }
 
         if (isDigit(chr)) {
           int precision = numberPrecisionDigit(_state)*10+(chr-'0');
-          _recv->numberEnd(makePosition(/*offset:*/1), type, precision);
+          _recv->numberEnd(makePosition(/*offset:*/1),
+                           Optional<NumberType>(type),
+                           Optional<int>(precision));
           _state = State::GOT_NUMBER_PRECISION_2;
         } else {
-          lexEndOfNumber(type, numberPrecisionDigit(_state), chr);
+          lexEndOfNumber(Optional<NumberType>(type),
+                         Optional<int>(numberPrecisionDigit(_state)),
+                         chr);
         }
         break;
       }

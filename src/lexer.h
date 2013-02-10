@@ -23,6 +23,8 @@
 
 #include <string>
 
+#include "optional.h"
+
 namespace arw {
 
 /**
@@ -50,12 +52,9 @@ class Lexer {
   };
 
   enum class NumberType {
-    // I use a P_ prefix, because for some reason Emacs crashes whenever I write
-    // SIGNE_D
-    P_UNSPECIFIED,
-    P_SIGNED,
-    P_UNSIGNED,
-    P_IMPRECISE
+    SIGNED,
+    UNSIGNED,
+    IMPRECISE
   };
 
   /**
@@ -109,12 +108,9 @@ class Lexer {
     virtual void numberBegin(const Position& position,
                              bool negative,
                              Radix radix) {}
-    /**
-     * @param precision -1 means unspecified.
-     */
     virtual void numberEnd(const Position& position,
-                           NumberType numberType,
-                           int precision) {}
+                           const Optional<NumberType>& numberType,
+                           const Optional<int>& precision) {}
     virtual void symbolBegin(const Position& position) {}
     virtual void symbolEnd(const Position& position) {}
 
@@ -309,8 +305,8 @@ class Lexer {
                      const Position& position,
                      char32_t gotNewline);
   void handleNewline(char32_t chr, char32_t lastNewline, State nextState);
-  void lexEndOfNumber(NumberType type,
-                      int precision,
+  void lexEndOfNumber(const Optional<NumberType> type,
+                      const Optional<int>& precision,
                       char32_t chr);
   void lexChar(char32_t chr);
   /**

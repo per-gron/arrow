@@ -25,8 +25,11 @@
 
 #include "gtest/gtest.h"
 #include "lexer.h"
+#include "optional.h"
 
 namespace {
+
+typedef arw::Lexer::NumberType NT;
 
 enum class Lexeme {
   ERROR,
@@ -212,8 +215,8 @@ class TestReceiver : public ExpectErrorReceiver {
   }
 
   virtual void numberEnd(const arw::Lexer::Position& position,
-                         arw::Lexer::NumberType numberType,
-                         int precision) {
+                         const arw::Optional<NT>& numberType,
+                         const arw::Optional<int>& precision) {
     push(position, Lexeme::NUMBER_END);
   }
 
@@ -327,8 +330,8 @@ class ExpectNumberReceiver : public ExpectLexemesReceiver {
   template<typename Iter>
   ExpectNumberReceiver(bool negative,
                        arw::Lexer::Radix radix,
-                       arw::Lexer::NumberType numberType,
-                       int precision,
+                       const arw::Optional<NT>& numberType,
+                       const arw::Optional<int>& precision,
                        Iter begin,
                        Iter end)
       : ExpectLexemesReceiver(begin, end),
@@ -357,8 +360,8 @@ class ExpectNumberReceiver : public ExpectLexemesReceiver {
   }
 
   virtual void numberEnd(const arw::Lexer::Position& position,
-                         arw::Lexer::NumberType numberType,
-                         int precision) {
+                         const arw::Optional<NT>& numberType,
+                         const arw::Optional<int>& precision) {
     if (numberType != _numberType) {
       encounteredError();
     }
@@ -373,8 +376,8 @@ class ExpectNumberReceiver : public ExpectLexemesReceiver {
  private:
   bool _negative;
   arw::Lexer::Radix _radix;
-  arw::Lexer::NumberType _numberType;
-  int _precision;
+  arw::Optional<NT> _numberType;
+  arw::Optional<int> _precision;
 };
 
 int countErrors(const char32_t* str) {
@@ -426,8 +429,8 @@ template<typename Iter>
 bool runNumber(const char32_t* str,
                bool negative,
                arw::Lexer::Radix radix,
-               arw::Lexer::NumberType numberType,
-               int precision,
+               const arw::Optional<NT>& numberType,
+               const arw::Optional<int>& precision,
                Iter begin,
                Iter end) {
   ExpectNumberReceiver recv(negative,
@@ -449,8 +452,8 @@ bool runNumber(const char32_t* str,
 bool runNumber(const char32_t* str,
                bool negative,
                arw::Lexer::Radix radix,
-               arw::Lexer::NumberType numberType,
-               int precision,
+               const arw::Optional<NT>& numberType,
+               const arw::Optional<int>& precision,
                std::vector<Entry> entries) {
   return runNumber(str,
                    negative,
@@ -732,8 +735,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"1",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 1 },
                         }));
@@ -741,8 +744,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"11",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -750,8 +753,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 1 },
                         }));
@@ -760,8 +763,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0x0",
                         /*negative:*/false,
                         arw::Lexer::Radix::HEX,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -769,8 +772,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0X0",
                         /*negative:*/false,
                         arw::Lexer::Radix::HEX,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -778,8 +781,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0b0",
                         /*negative:*/false,
                         arw::Lexer::Radix::BINARY,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -787,8 +790,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0B0",
                         /*negative:*/false,
                         arw::Lexer::Radix::BINARY,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -796,8 +799,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0o0",
                         /*negative:*/false,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -805,8 +808,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"0O0",
                         /*negative:*/false,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -814,8 +817,8 @@ TEST(Lexer, NumberRadix) {
   EXPECT_TRUE(runNumber(U"00",
                         /*negative:*/false,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -833,8 +836,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-1",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -842,8 +845,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -851,8 +854,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-11",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -860,8 +863,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0x0",
                         /*negative:*/true,
                         arw::Lexer::Radix::HEX,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -869,8 +872,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0X0",
                         /*negative:*/true,
                         arw::Lexer::Radix::HEX,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -878,8 +881,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0b0",
                         /*negative:*/true,
                         arw::Lexer::Radix::BINARY,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -887,8 +890,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0B0",
                         /*negative:*/true,
                         arw::Lexer::Radix::BINARY,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -896,8 +899,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0o0",
                         /*negative:*/true,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -905,8 +908,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-0O0",
                         /*negative:*/true,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -914,8 +917,8 @@ TEST(Lexer, NumberNegative) {
   EXPECT_TRUE(runNumber(U"-00",
                         /*negative:*/true,
                         arw::Lexer::Radix::OCTAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -926,8 +929,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"0i",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_SIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -935,8 +938,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"0u",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::UNSIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -944,8 +947,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"0f",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_IMPRECISE,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::IMPRECISE),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -953,8 +956,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"1i",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_SIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -962,8 +965,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"1u",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::UNSIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -971,8 +974,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"1f",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_IMPRECISE,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::IMPRECISE),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 2 },
                         }));
@@ -980,8 +983,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"-0i",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_SIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -989,8 +992,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"-0u",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSIGNED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::UNSIGNED),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -998,8 +1001,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"-0f",
                         /*negative:*/true,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_IMPRECISE,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::IMPRECISE),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -1008,8 +1011,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"0i1",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_SIGNED,
-                        /*precision:*/1, {
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(1), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -1017,8 +1020,8 @@ TEST(Lexer, NumberType) {
   EXPECT_TRUE(runNumber(U"0i11",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_SIGNED,
-                        /*precision:*/11, {
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(11), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
@@ -1033,8 +1036,8 @@ TEST(Lexer, NumberDecimal) {
   EXPECT_TRUE(runNumber(U"1.1",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -1042,8 +1045,8 @@ TEST(Lexer, NumberDecimal) {
   EXPECT_TRUE(runNumber(U"0.1",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_UNSPECIFIED,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 3 },
                         }));
@@ -1051,8 +1054,8 @@ TEST(Lexer, NumberDecimal) {
   EXPECT_TRUE(runNumber(U"1.1f",
                         /*negative:*/false,
                         arw::Lexer::Radix::DECIMAL,
-                        arw::Lexer::NumberType::P_IMPRECISE,
-                        /*precision:*/-1, {
+                        arw::Optional<NT>(NT::IMPRECISE),
+                        /*precision:*/arw::Optional<int>(), {
                           { Lexeme::NUMBER_BEGIN, 0 },
                           { Lexeme::NUMBER_END, 4 },
                         }));
