@@ -379,6 +379,8 @@ void Lexer::lexChar(char32_t chr) {
       break;
 
     case State::IN_NUMBER:
+    case State::IN_NUMBER_JUST_GOT_UNDERSCORE:
+    case State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT:
     case State::IN_NUMBER_JUST_GOT_DOT:
     case State::IN_NUMBER_GOT_DOT:
       if (State::IN_NUMBER_JUST_GOT_DOT == _state &&
@@ -391,10 +393,30 @@ void Lexer::lexChar(char32_t chr) {
 
       if (isDigit(chr)) {
         // We're still in the number
-        if (State::IN_NUMBER_JUST_GOT_DOT == _state) {
+        if (State::IN_NUMBER_GOT_DOT == _state ||
+            State::IN_NUMBER_JUST_GOT_DOT == _state ||
+            State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT == _state) {
           _state = State::IN_NUMBER_GOT_DOT;
+        } else {
+          _state = State::IN_NUMBER;
+        }
+      } else if ('_' == chr) {
+        if (State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT == _state ||
+            State::IN_NUMBER_JUST_GOT_UNDERSCORE == _state) {
+          _recv->error(makePosition(), "Got underscore after underscore");
+        }
+
+        if (State::IN_NUMBER == _state) {
+          _state = State::IN_NUMBER_JUST_GOT_UNDERSCORE;
+        } else {
+          _state = State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT;
         }
       } else if ('.' == chr) {
+        if (State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT == _state ||
+            State::IN_NUMBER_JUST_GOT_UNDERSCORE == _state) {
+          _recv->error(makePosition(), "Got dot after underscore");
+        }
+
         _state = State::IN_NUMBER_JUST_GOT_DOT;
       } else if ('i' == chr || 'I' == chr) {
         _state = State::GOT_NUMBER_TYPE_I;
@@ -403,6 +425,11 @@ void Lexer::lexChar(char32_t chr) {
       } else if ('f' == chr || 'F' == chr) {
         _state = State::GOT_NUMBER_TYPE_F;
       } else {
+        if (State::IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT == _state ||
+            State::IN_NUMBER_JUST_GOT_UNDERSCORE == _state) {
+          _recv->error(makePosition(), "Got non-digit after underscore");
+        }
+
         lexEndOfNumber(Optional<NumberType>(), Optional<int>(), chr);
       }
       break;

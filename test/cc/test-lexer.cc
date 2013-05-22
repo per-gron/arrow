@@ -510,6 +510,21 @@ TEST(Lexer, Symbol) {
     { Lexeme::SYMBOL_END, 2 },
   }));
 
+  EXPECT_TRUE(run(U"_a", {
+    { Lexeme::SYMBOL_BEGIN, 0 },
+    { Lexeme::SYMBOL_END, 2 },
+  }));
+
+  EXPECT_TRUE(run(U"_1", {
+    { Lexeme::SYMBOL_BEGIN, 0 },
+    { Lexeme::SYMBOL_END, 2 },
+  }));
+
+  EXPECT_TRUE(run(U"_1i", {
+    { Lexeme::SYMBOL_BEGIN, 0 },
+    { Lexeme::SYMBOL_END, 3 },
+  }));
+
   EXPECT_TRUE(run(U"a;a", {
     { Lexeme::SYMBOL_BEGIN, 0 },
     { Lexeme::SYMBOL_END, 1 },
@@ -1066,6 +1081,40 @@ TEST(Lexer, NumberDecimal) {
   EXPECT_EQ(1, countErrors(U"1.1.1"));
   EXPECT_EQ(1, countErrors(U"."));
   EXPECT_EQ(1, countErrors(U"1.f"));
+}
+
+TEST(Lexer, NumberUnderscore) {
+  EXPECT_EQ(2, countErrors(U"1._"));
+  EXPECT_EQ(1, countErrors(U"1_"));
+  EXPECT_EQ(1, countErrors(U"1_.0"));
+  EXPECT_EQ(2, countErrors(U"1_."));
+
+  EXPECT_TRUE(runNumber(U"1_000",
+                        /*negative:*/false,
+                        arw::Lexer::Radix::DECIMAL,
+                        arw::Optional<NT>(),
+                        /*precision:*/arw::Optional<int>(), {
+                          { Lexeme::NUMBER_BEGIN, 0 },
+                          { Lexeme::NUMBER_END, 5 },
+                        }));
+
+  EXPECT_TRUE(runNumber(U"1_i",
+                        /*negative:*/false,
+                        arw::Lexer::Radix::DECIMAL,
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(), {
+                          { Lexeme::NUMBER_BEGIN, 0 },
+                          { Lexeme::NUMBER_END, 3 },
+                        }));
+
+  EXPECT_TRUE(runNumber(U"1_i32",
+                        /*negative:*/false,
+                        arw::Lexer::Radix::DECIMAL,
+                        arw::Optional<NT>(NT::SIGNED),
+                        /*precision:*/arw::Optional<int>(32), {
+                          { Lexeme::NUMBER_BEGIN, 0 },
+                          { Lexeme::NUMBER_END, 5 },
+                        }));
 }
 
 TEST(Lexer, Char) {

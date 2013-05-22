@@ -211,6 +211,16 @@ class Lexer {
      */
     IN_NUMBER,
     /**
+     * Within number; the last character was an underscore. This must be
+     * followed by a digit.
+     */
+    IN_NUMBER_JUST_GOT_UNDERSCORE,
+    /**
+     * Within number; the last character was an underscore, and we have
+     * previously got a dot. This must be followed by a digit.
+     */
+    IN_NUMBER_JUST_GOT_UNDERSCORE_GOT_DOT,
+    /**
      * Within number; the last character was a dot. This must be followed by a
      * digit.
      */
