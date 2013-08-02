@@ -447,3 +447,20 @@ TEST(Handle, Swap) {
   EXPECT_EQ(*v1, 2);
   EXPECT_EQ(*v2, 1);
 }
+
+TEST(Handle, Size) {
+  ValHooks<int>::reset();
+  Val<int> m1(0);
+  static_assert(sizeof(m1) == sizeof(int),  // NOLINT(runtime/sizeof)
+                "Handle size should be equal to its data");
+
+  WeakHooks<int>::reset();
+  Weak<int> m2(nullptr);
+  static_assert(sizeof(m2) == sizeof(int*),  // NOLINT(runtime/sizeof)
+                "Handle size should be equal to its data");
+
+  RefHooks<int>::reset();
+  Ref<int> m3(nullptr);
+  static_assert(sizeof(m3) == sizeof(int*),  // NOLINT(runtime/sizeof)
+                "Handle size should be equal to its data");
+}
