@@ -21,6 +21,8 @@
 #ifndef ARW_MEMBER_HANDLE_HOOKS_H_
 #define ARW_MEMBER_HANDLE_HOOKS_H_
 
+#include <type_traits>
+
 #include "handle.h"
 
 namespace arw {
@@ -39,7 +41,10 @@ class MemberHandleHooks {
   destroyed(const Handle<T, Type, MemberHandleHooks>* handle) {}
 
   inline static T* read(T** ptr) {
-    return static_cast<T*>(GCHooks::read(reinterpret_cast<void**>(ptr)));
+    typedef typename std::remove_const<T>::type NonConstT;
+    return static_cast<T*>(GCHooks::read(
+      reinterpret_cast<void**>(
+        const_cast<NonConstT**>(ptr))));
   }
 
   inline static void write(T** ptr, T* value) {

@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "gtest/gtest.h"
-
 #include "member-handle-hooks.h"
 #include "handle.h"
+
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -94,4 +94,10 @@ TEST(MemberHooks, Write) {
   m = &val1;
   EXPECT_EQ(m.get(), nullptr);
   MockGCHooks::setWriteNull(false);
+}
+
+TEST(MemberHooks, Const) {
+  Member<const int, arw::HandleType::REFERENCE> m(nullptr);
+  // Make sure the following line compiles
+  const int* ref = m.get();
 }
