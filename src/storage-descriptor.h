@@ -30,6 +30,7 @@
 namespace arw {
 
 namespace internal {
+template<typename GCHooks>
 class TypeStorage;
 }  // namespace internal
 
@@ -104,7 +105,7 @@ class StorageDescriptor {
   using Member =
   Handle<T, Type, internal::MemberHandleHooks<T, Type, GCHooks> >;
 
-  friend class ::arw::internal::TypeStorage;
+  friend class ::arw::internal::TypeStorage<GCHooks>;
 
   /**
    * This is a special sentinel value. See the comments on
@@ -121,7 +122,7 @@ class StorageDescriptor {
    * Once created, objects of this class should not be mutated.
    */
   struct Slot {
-    friend class ::arw::internal::TypeStorage;
+    friend class ::arw::internal::TypeStorage<GCHooks>;
 
     /**
      * Constructs a Slot.
@@ -138,7 +139,6 @@ class StorageDescriptor {
       // Value slots can't be variable size.
       ARW_CHECK(HandleType::VALUE != type || !storageDescriptor->hasArray());
     }
-
 
     /**
      * If this points to StorageDescriptor::boxed, it means that this is a
