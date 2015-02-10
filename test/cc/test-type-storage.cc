@@ -22,6 +22,8 @@
 
 #include "type-storage.h"
 
+#include "member.h"
+
 namespace {
 
 class MockGCHooks {
@@ -37,10 +39,6 @@ class MockGCHooks {
   }
 };
 
-template<typename T, arw::HandleType Type>
-using Member =
-arw::Handle<T, Type, arw::internal::MemberHandleHooks<T, Type, MockGCHooks> >;
-
 class Members0 {
   ARW_DECLARE_STORAGE;
 };
@@ -48,14 +46,14 @@ class Members0 {
 class Members1 {
   ARW_DECLARE_STORAGE;
 
-  Member<Members0, arw::HandleType::REFERENCE> member1;
+  arw::MemberRef<Members0, MockGCHooks> member1;
 };
 
 class Members2 {
   ARW_DECLARE_STORAGE;
 
-  Member<Members0, arw::HandleType::REFERENCE> member1;
-  Member<Members0, arw::HandleType::REFERENCE> member2;
+  arw::MemberRef<Members0, MockGCHooks> member1;
+  arw::MemberRef<Members0, MockGCHooks> member2;
 };
 
 class Circular {
@@ -64,7 +62,7 @@ class Circular {
   typedef MockGCHooks gc_hooks;
 
  private:
-  Member<Circular, arw::HandleType::REFERENCE> self;
+  arw::MemberRef<Circular, MockGCHooks> self;
 };
 
 }  // namespace
