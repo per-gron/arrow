@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_OPTIONAL_H_
-#define ARW_OPTIONAL_H_
+#pragma once
 
 #include <type_traits>
 #include <new>
@@ -509,5 +508,3 @@ void swap(arw::Optional<T>& lhs, arw::Optional<T>& rhs) {
 }
 
 }  // namespace std
-
-#endif  // ARW_OPTIONAL_H_

@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_STORAGE_DESCRIPTOR_H_
-#define ARW_STORAGE_DESCRIPTOR_H_
+#pragma once
 
 #include <vector>
 
@@ -311,5 +310,3 @@ typename StorageDescriptor<GCHooks>::Slot
 StorageDescriptor<GCHooks>::Slot::empty(NULL, HandleType::REFERENCE, 0);
 
 }  // namespace arw
-
-#endif  // ARW_STORAGE_DESCRIPTOR_H_

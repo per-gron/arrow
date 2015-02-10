@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_PERSISTENT_POOL_H_
-#define ARW_PERSISTENT_POOL_H_
+#pragma once
 
 #include <map>
 #include <iterator>
@@ -175,5 +174,3 @@ class PersistentPool {
 };
 
 }  // namespace arw
-
-#endif  // ARW_PERSISTENT_POOL_H_

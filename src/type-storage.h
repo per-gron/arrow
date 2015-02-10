@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_TYPE_STORAGE_H_
-#define ARW_TYPE_STORAGE_H_
+#pragma once
 
 #include <cstdint>
 #include <new>
@@ -363,5 +362,3 @@ ARW_DEFINE_STORAGE_ARR_1(
   /*array member:*/_values,
   _array
 );
-
-#endif  // ARW_TYPE_STORAGE_H_

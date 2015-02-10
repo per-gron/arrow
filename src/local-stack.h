@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_LOCAL_STACK_H_
-#define ARW_LOCAL_STACK_H_
+#pragma once
 
 #include <vector>
 #include <utility>
@@ -139,5 +138,3 @@ class LocalStack {
 };
 
 }  // namespace arw
-
-#endif  // ARW_LOCAL_STACK_H_

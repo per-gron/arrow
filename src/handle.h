@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_HANDLE_H_
-#define ARW_HANDLE_H_
+#pragma once
 
 #include <algorithm>
 
@@ -277,5 +276,3 @@ void swap(arw::Handle<T, Type, Hooks>& lhs,
 }
 
 }  // namespace std
-
-#endif  // ARW_HANDLE_H_

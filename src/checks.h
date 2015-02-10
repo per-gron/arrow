@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_CHECKS_H_
-#define ARW_CHECKS_H_
+#pragma once
 
 #ifdef DEBUG
 
@@ -70,5 +69,3 @@ namespace arw {
 void Check(const char* file, int line, const char* fmt, ...);
 
 }  // namespace arw
-
-#endif  // ARW_CHECKS_H_

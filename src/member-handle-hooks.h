@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_MEMBER_HANDLE_HOOKS_H_
-#define ARW_MEMBER_HANDLE_HOOKS_H_
+#pragma once
 
 #include <type_traits>
 
@@ -55,5 +54,3 @@ class MemberHandleHooks {
 }  // namespace internal
 
 }  // namespace arw
-
-#endif  // ARW_MEMBER_HANDLE_HOOKS_H_

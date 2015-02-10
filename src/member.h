@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ARW_MEMBER_H_
-#define ARW_MEMBER_H_
+#pragma once
 
 #include "handle.h"
 #include "member-handle-hooks.h"
@@ -54,5 +53,3 @@ template<typename T, typename GCHooks>
 using MemberWeak = Member<T, HandleType::WEAK, GCHooks>;
 
 }  // namespace arw
-
-#endif  // ARW_MEMBER_H_

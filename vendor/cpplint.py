@@ -1116,9 +1116,9 @@ def GetHeaderGuardCPPVariable(filename):
 
 
 def CheckForHeaderGuard(filename, lines, error):
-  """Checks that the file contains a header guard.
+  """Checks that the file contains a #pragma once header guard.
 
-  Logs an error if no #ifndef header guard is present.  For other
+  Logs an error if no header guard is present.  For other
   headers, checks that the full pathname is used.
 
   Args:
@@ -1127,67 +1127,15 @@ def CheckForHeaderGuard(filename, lines, error):
     error: The function to call with any errors found.
   """
 
-  cppvar = GetHeaderGuardCPPVariable(filename)
-
-  ifndef = None
-  ifndef_linenum = 0
-  define = None
-  endif = None
-  endif_linenum = 0
+  pragma = None
   for linenum, line in enumerate(lines):
-    linesplit = line.split()
-    if len(linesplit) >= 2:
-      # find the first occurrence of #ifndef and #define, save arg
-      if not ifndef and linesplit[0] == '#ifndef':
-        # set ifndef to the header guard presented on the #ifndef line.
-        ifndef = linesplit[1]
-        ifndef_linenum = linenum
-      if not define and linesplit[0] == '#define':
-        define = linesplit[1]
-    # find the last occurrence of #endif, save entire line
-    if line.startswith('#endif'):
-      endif = line
-      endif_linenum = linenum
+    if line == '#pragma once':
+      pragma = line
 
-  if not ifndef:
+  if not pragma:
     error(filename, 0, 'build/header_guard', 5,
-          'No #ifndef header guard found, suggested CPP variable is: %s' %
-          cppvar)
+          'No #pragma once header guard found')
     return
-
-  if not define:
-    error(filename, 0, 'build/header_guard', 5,
-          'No #define header guard found, suggested CPP variable is: %s' %
-          cppvar)
-    return
-
-  # The guard should be PATH_FILE_H_, but we also allow PATH_FILE_H__
-  # for backward compatibility.
-  if ifndef != cppvar:
-    error_level = 0
-    if ifndef != cppvar + '_':
-      error_level = 5
-
-    ParseNolintSuppressions(filename, lines[ifndef_linenum], ifndef_linenum,
-                            error)
-    error(filename, ifndef_linenum, 'build/header_guard', error_level,
-          '#ifndef header guard has wrong style, please use: %s' % cppvar)
-
-  if define != ifndef:
-    error(filename, 0, 'build/header_guard', 5,
-          '#ifndef and #define don\'t match, suggested CPP variable is: %s' %
-          cppvar)
-    return
-
-  if endif != ('#endif  // %s' % cppvar):
-    error_level = 0
-    if endif != ('#endif  // %s' % (cppvar + '_')):
-      error_level = 5
-
-    ParseNolintSuppressions(filename, lines[endif_linenum], endif_linenum,
-                            error)
-    error(filename, endif_linenum, 'build/header_guard', error_level,
-          '#endif line should be "#endif  // %s"' % cppvar)
 
 
 def CheckForUnicodeReplacementCharacters(filename, lines, error):
