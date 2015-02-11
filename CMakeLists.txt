@@ -14,6 +14,7 @@ set(arw_sources
   src/storage/local.h
   src/storage/member_handle_hooks.h
   src/storage/member.h
+  src/storage/newable.h
   src/storage/optional.h
   src/storage/persistent_pool.h
   src/storage/persistent.h
@@ -47,6 +48,7 @@ set(arw_test_sources
   test/storage/local_stack_test.cc
   test/storage/member_handle_hooks_test.cc
   test/storage/member_test.cc
+  test/storage/newable_test.cc
   test/storage/optional_test.cc
   test/storage/persistent_pool_test.cc
   test/storage/storage_descriptor_test.cc
