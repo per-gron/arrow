@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 // There is no executable code in member.h to test, but it is still valuable to
 // see that it at least compiles.

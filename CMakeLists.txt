@@ -56,3 +56,6 @@ add_executable(arw_test ${arw_test_sources})
 target_link_libraries(arw_test arw gtest)
 target_include_directories(arw_test PUBLIC ${gtest_include_root})
 target_include_directories(arw_test PRIVATE "src")
+
+add_custom_target(lint python vendor/cpplint.py ${arw_sources} ${arw_test_sources}
+                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
