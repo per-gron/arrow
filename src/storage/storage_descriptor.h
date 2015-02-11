@@ -22,9 +22,9 @@
 
 #include <vector>
 
-#include "handle.h"
-#include "member.h"
-#include "checks.h"
+#include "base/checks.h"
+#include "storage/handle.h"
+#include "storage/member.h"
 
 namespace arw {
 

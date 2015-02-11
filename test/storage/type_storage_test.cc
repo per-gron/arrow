@@ -20,9 +20,8 @@
 
 #include "gtest/gtest.h"
 
-#include "type_storage.h"
-
-#include "member.h"
+#include "storage/type_storage.h"
+#include "storage/member.h"
 
 namespace {
 

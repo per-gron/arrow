@@ -23,7 +23,7 @@
 
 #include "gtest/gtest.h"
 
-#include "handle.h"
+#include "storage/handle.h"
 
 namespace {
 

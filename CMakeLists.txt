@@ -7,18 +7,18 @@ add_definitions(
 )
 
 set(arw_sources
-  src/checks.cc
-  src/checks.h
-  src/handle.h
-  src/local_stack.h
-  src/local.h
-  src/member_handle_hooks.h
-  src/member.h
-  src/optional.h
-  src/persistent_pool.h
-  src/persistent.h
-  src/storage_descriptor.h
-  src/type_storage.h)
+  src/base/checks.cc
+  src/base/checks.h
+  src/storage/handle.h
+  src/storage/local_stack.h
+  src/storage/local.h
+  src/storage/member_handle_hooks.h
+  src/storage/member.h
+  src/storage/optional.h
+  src/storage/persistent_pool.h
+  src/storage/persistent.h
+  src/storage/storage_descriptor.h
+  src/storage/type_storage.h)
 
 add_library(arw STATIC ${arw_sources})
 
@@ -41,16 +41,16 @@ add_library(gtest STATIC ${gtest_sources})
 target_include_directories(gtest PUBLIC ${gtest_include_root} ${gtest_root})
 
 set(arw_test_sources
-  test/cc/checks_test.cc
-  test/cc/handle_test.cc
-  test/cc/local_stack_test.cc
-  test/cc/main.cc
-  test/cc/member_handle_hooks_test.cc
-  test/cc/member_test.cc
-  test/cc/optional_test.cc
-  test/cc/persistent_pool_test.cc
-  test/cc/storage_descriptor_test.cc
-  test/cc/type_storage_test.cc)
+  test/base/checks_test.cc
+  test/main.cc
+  test/storage/handle_test.cc
+  test/storage/local_stack_test.cc
+  test/storage/member_handle_hooks_test.cc
+  test/storage/member_test.cc
+  test/storage/optional_test.cc
+  test/storage/persistent_pool_test.cc
+  test/storage/storage_descriptor_test.cc
+  test/storage/type_storage_test.cc)
 
 add_executable(arw_test ${arw_test_sources})
 target_link_libraries(arw_test arw gtest)

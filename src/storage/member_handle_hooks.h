@@ -18,8 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "gtest/gtest.h"
+#pragma once
 
-// There is no executable code in member.h to test, but it is still valuable to
-// see that it at least compiles.
-#include "member.h"
+#include <type_traits>
+
+#include "storage/handle.h"
+
+namespace arw {
+
+namespace internal {
+
+template<typename T, HandleType Type, typename GCHooks>
+class MemberHandleHooks {
+ public:
+  MemberHandleHooks() = delete;
+
+  inline static void
+  created(const Handle<T, Type, MemberHandleHooks>* handle) {}
+
+  inline static void
+  destroyed(const Handle<T, Type, MemberHandleHooks>* handle) {}
+
+  inline static T* read(T** ptr) {
+    typedef typename std::remove_const<T>::type NonConstT;
+    return static_cast<T*>(GCHooks::read(
+      reinterpret_cast<void**>(
+        const_cast<NonConstT**>(ptr))));
+  }
+
+  inline static void write(T** ptr, T* value) {
+    GCHooks::write(reinterpret_cast<void**>(ptr), static_cast<void*>(value));
+  }
+};
+
+}  // namespace internal
+
+}  // namespace arw

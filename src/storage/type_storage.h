@@ -25,10 +25,10 @@
 #include <vector>
 #include <memory>
 
-#include "handle.h"
-#include "member_handle_hooks.h"
-#include "checks.h"
-#include "storage_descriptor.h"
+#include "base/checks.h"
+#include "storage/handle.h"
+#include "storage/member_handle_hooks.h"
+#include "storage/storage_descriptor.h"
 
 /**
  * This file defines the arw::internal::TypeStorage class, which (as the

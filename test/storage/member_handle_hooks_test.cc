@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "member_handle_hooks.h"
-#include "handle.h"
-
 #include "gtest/gtest.h"
+
+#include "storage/handle.h"
+#include "storage/member_handle_hooks.h"
 
 namespace {
 

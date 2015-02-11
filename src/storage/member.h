@@ -18,10 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "gtest/gtest.h"
+#pragma once
 
-#include "checks.h"
+#include "storage/handle.h"
+#include "storage/member_handle_hooks.h"
 
-TEST(Checks, Assert) {
-  ASSERT_DEATH(ARW_CHECK(0), "");
-}
+namespace arw {
+
+/**
+ * Storage handle, for use in Storage enabled classes. Used both for references
+ * values. The main purpose of this class is to be a hook for implementing
+ * read/write barriers.
+ */
+template<typename T, HandleType Type, typename GCHooks>
+using Member = Handle<T, Type, internal::MemberHandleHooks<T, Type, GCHooks> >;
+
+/**
+ * MemberVal<T, GCHooks> is shorthand for Member<T, HandleType::VALUE, GCHooks>
+ */
+template<typename T, typename GCHooks>
+using MemberVal = Member<T, HandleType::VALUE, GCHooks>;
+
+/**
+ * MemberRef<T, GCHooks> is shorthand for
+ * Member<T, HandleType::REFERENCE, GCHooks>
+ */
+template<typename T, typename GCHooks>
+using MemberRef = Member<T, HandleType::REFERENCE, GCHooks>;
+
+/**
+ * MemberWeak<T, GCHooks> is shorthand for Member<T, HandleType::VALUE, GCHooks>
+ */
+template<typename T, typename GCHooks>
+using MemberWeak = Member<T, HandleType::WEAK, GCHooks>;
+
+}  // namespace arw

@@ -18,39 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
+#include "gtest/gtest.h"
 
-#include <type_traits>
+#include "base/checks.h"
 
-#include "handle.h"
-
-namespace arw {
-
-namespace internal {
-
-template<typename T, HandleType Type, typename GCHooks>
-class MemberHandleHooks {
- public:
-  MemberHandleHooks() = delete;
-
-  inline static void
-  created(const Handle<T, Type, MemberHandleHooks>* handle) {}
-
-  inline static void
-  destroyed(const Handle<T, Type, MemberHandleHooks>* handle) {}
-
-  inline static T* read(T** ptr) {
-    typedef typename std::remove_const<T>::type NonConstT;
-    return static_cast<T*>(GCHooks::read(
-      reinterpret_cast<void**>(
-        const_cast<NonConstT**>(ptr))));
-  }
-
-  inline static void write(T** ptr, T* value) {
-    GCHooks::write(reinterpret_cast<void**>(ptr), static_cast<void*>(value));
-  }
-};
-
-}  // namespace internal
-
-}  // namespace arw
+TEST(Checks, Assert) {
+  ASSERT_DEATH(ARW_CHECK(0), "");
+}

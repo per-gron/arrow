@@ -19,7 +19,8 @@
 // SOFTWARE.
 
 #include "gtest/gtest.h"
-#include "optional.h"
+
+#include "storage/optional.h"
 
 namespace {
 
