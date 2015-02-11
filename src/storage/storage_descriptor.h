@@ -213,7 +213,8 @@ class StorageDescriptor {
       _i(i), _sd(sd) {}
 
     const value_type* get() const {
-      return reinterpret_cast<const MemberVal<Slot, GCHooks>*>(&_sd._values)[_i].get();
+      return reinterpret_cast<const MemberVal<Slot, GCHooks>*>(
+          &_sd._values)[_i].get();
     }
 
     size_t _i;
