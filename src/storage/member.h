@@ -21,9 +21,24 @@
 #pragma once
 
 #include "storage/handle.h"
-#include "storage/member_handle_hooks.h"
 
 namespace arw {
+
+namespace internal {
+
+template<typename T, HandleType Type, typename GCHooks>
+class MemberHandleHooks : public GCHooks {
+ public:
+  MemberHandleHooks() = delete;
+
+  inline static void
+  created(const Handle<T, Type, MemberHandleHooks>* handle) {}
+
+  inline static void
+  destroyed(const Handle<T, Type, MemberHandleHooks>* handle) {}
+};
+
+}  // namespace internal
 
 /**
  * Storage handle, for use in Storage enabled classes. Used both for references

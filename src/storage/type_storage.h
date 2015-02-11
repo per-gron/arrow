@@ -27,7 +27,6 @@
 
 #include "base/checks.h"
 #include "storage/handle.h"
-#include "storage/member_handle_hooks.h"
 #include "storage/storage_descriptor.h"
 
 /**
