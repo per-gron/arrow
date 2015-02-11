@@ -250,6 +250,10 @@ class StorageDescriptor {
     return this == &boxed;
   }
 
+  inline Slot &array() {
+    return *_array;
+  }
+
  private:
   /**
    * Private constructor. To create StorageDescriptor objects, use init.

@@ -60,7 +60,7 @@ static std::unique_ptr<SD> makeVariableSizeSD() {
   return makeSD(
     /*sizeWithEmptyArray:*/0,
     /*hasArray:*/true,
-    /*array:*/SD::Slot(NULL, arw::HandleType::REFERENCE, 0),
+    /*array:*/SD::Slot(NULL, arw::HandleType::REFERENCE, 123),
     /*valuesBegin:*/static_cast<SD::Slot*>(0),
     /*valuesEnd:*/static_cast<SD::Slot*>(0));
 }
@@ -69,7 +69,7 @@ static std::unique_ptr<SD> makeVariableSizeSD() {
 
 
 TEST(StorageDescriptor, Slot) {
-  SD::Slot slot(NULL, arw::HandleType::REFERENCE, 5);
+  const SD::Slot slot(NULL, arw::HandleType::REFERENCE, 5);
   EXPECT_TRUE(SD::Slot::empty.storageDescriptor.get() ==
               slot.storageDescriptor.get());
   EXPECT_EQ(5, slot.offset);
@@ -81,12 +81,12 @@ TEST(StorageDescriptor, Slot) {
 
   // Check that we're not allowed to create by-value slots for variable-size
   // objects.
-  std::unique_ptr<SD> sd = makeVariableSizeSD();
+  const std::unique_ptr<SD> sd = makeVariableSizeSD();
   EXPECT_DEATH(SD::Slot(sd.get(), arw::HandleType::VALUE, 0), "");
 }
 
 TEST(StorageDescriptor, Accessors) {
-  std::unique_ptr<SD> sd = makeVariableSizeSD();
+  const std::unique_ptr<SD> sd = makeVariableSizeSD();
   SD::Slot boxedSlot(NULL, arw::HandleType::REFERENCE, 5);
 
   EXPECT_EQ(sizeof(SD)+sizeof(SD::Slot)*5, SD::objectSize(5));
@@ -97,11 +97,18 @@ TEST(StorageDescriptor, Accessors) {
 
 TEST(StorageDescriptor, Construct) {
   // Construct with one field
-  SD::Slot slot(NULL, arw::HandleType::REFERENCE, 5);
+  const SD::Slot slot(NULL, arw::HandleType::REFERENCE, 5);
   makeSD(
     /*sizeWithEmptyArray:*/0,
     /*hasArray:*/true,
     /*array:*/SD::Slot(NULL, arw::HandleType::REFERENCE, 0),
     /*valuesBegin:*/&slot,
     /*valuesEnd:*/(&slot)+1);
+}
+
+TEST(StorageDescriptor, ArrayAccessor) {
+  const std::unique_ptr<SD> sd = makeVariableSizeSD();
+  EXPECT_EQ(sd->array().type, arw::HandleType::REFERENCE);
+  EXPECT_EQ(sd->array().offset, 123);
+  EXPECT_TRUE(sd->array().storageDescriptor->isBoxed());
 }
