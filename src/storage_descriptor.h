@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "handle.h"
-#include "member_handle_hooks.h"
+#include "member.h"
 #include "checks.h"
 
 namespace arw {
@@ -100,10 +100,6 @@ template<typename GCHooks>
 class StorageDescriptor {
   typedef StorageDescriptor<GCHooks> SD;
 
-  template<typename T, HandleType Type>
-  using Member =
-  Handle<T, Type, internal::MemberHandleHooks<T, Type, GCHooks> >;
-
   friend class ::arw::internal::TypeStorage<GCHooks>;
 
   /**
@@ -149,7 +145,7 @@ class StorageDescriptor {
      * Boxed types must not be by value, but it can be either weak or a strong
      * reference.
      */
-    const Member<const SD, HandleType::REFERENCE> storageDescriptor;
+    const MemberRef<const SD, GCHooks> storageDescriptor;
 
     /**
      * Specifies whether the slot is by value, strong reference or weak
@@ -288,12 +284,12 @@ class StorageDescriptor {
   /**
    * If _hasArray is false, this value is ignored.
    */
-  Member<Slot, HandleType::VALUE> _array;
+  MemberVal<Slot, GCHooks> _array;
   size_t _numValues;
   /**
    * This is a dummy zero-size object. Its actual size depends on _numValues.
    */
-  Member<Slot[0], HandleType::VALUE> _values;
+  MemberVal<Slot[0], GCHooks> _values;
 };
 
 template<typename GCHooks>
