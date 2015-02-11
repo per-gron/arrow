@@ -81,11 +81,11 @@ struct HandleTypes<T, HandleType::WEAK> {
  *   inline static void
  *   destroyed(const Handle<T, Type, HandleHooks>* handle) {}
  *
- *   inline static T* read(T** ptr) {
+ *   inline static void* read(void** ptr) {
  *     return *ptr;
  *   }
  *
- *   inline static void write(T** ptr, T* value) {
+ *   inline static void write(void** ptr, void* value) {
  *     *ptr = value;
  *   }
  * };
@@ -201,7 +201,10 @@ class Handle {
                           typename internal::HandleTypes<U, Type>::
                             value_type*>::type
   get() {
-    return Hooks::read(&_data);
+    typedef typename std::remove_const<value_type>::type NonConstT;
+    return static_cast<pointer_type>(Hooks::read(
+      reinterpret_cast<void**>(
+        const_cast<NonConstT**>(&_data))));
   }
 
   template<typename U = T>
@@ -209,7 +212,10 @@ class Handle {
                           typename internal::HandleTypes<U, Type>::
                             value_type const*>::type
   get() const {
-    return Hooks::read(&const_cast<storage_type&>(_data));
+    typedef typename std::remove_const<value_type>::type NonConstT;
+    return static_cast<const pointer_type>(Hooks::read(
+      reinterpret_cast<void**>(
+        const_cast<NonConstT**>(&_data))));
   }
 
   /**
@@ -259,7 +265,7 @@ class Handle {
   inline
   typename std::enable_if<U::VALUE != Type, void>::type
   write(T* val) {
-    Hooks::write(&_data, val);
+    Hooks::write(reinterpret_cast<void**>(&_data), static_cast<void*>(val));
   }
 
   storage_type _data;

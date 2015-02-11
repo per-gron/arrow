@@ -82,12 +82,12 @@ class TestHandleHooks {
     _destroyed.insert(handle);
   }
 
-  inline static T* read(T** ptr) {
+  inline static void* read(void** ptr) {
     _read.insert(reinterpret_cast<const H*>(ptr));
     return *ptr;
   }
 
-  inline static void write(T** ptr, T* value) {
+  inline static void write(void** ptr, void* value) {
     _written.insert(reinterpret_cast<const H*>(ptr));
     *ptr = value;
   }

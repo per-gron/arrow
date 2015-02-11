@@ -39,15 +39,12 @@ class MemberHandleHooks {
   inline static void
   destroyed(const Handle<T, Type, MemberHandleHooks>* handle) {}
 
-  inline static T* read(T** ptr) {
-    typedef typename std::remove_const<T>::type NonConstT;
-    return static_cast<T*>(GCHooks::read(
-      reinterpret_cast<void**>(
-        const_cast<NonConstT**>(ptr))));
+  inline static void* read(void** ptr) {
+    return GCHooks::read(ptr);
   }
 
-  inline static void write(T** ptr, T* value) {
-    GCHooks::write(reinterpret_cast<void**>(ptr), static_cast<void*>(value));
+  inline static void write(void** ptr, void* value) {
+    GCHooks::write(ptr, value);
   }
 };
 
