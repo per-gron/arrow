@@ -20,7 +20,7 @@
 
 #include <set>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "persistent-pool.h"
 
 typedef arw::PersistentPool<int, int> Pool;

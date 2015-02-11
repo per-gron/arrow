@@ -20,7 +20,7 @@
 
 #include <set>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "local-stack.h"
 
 typedef arw::LocalStack<int, int> Stack;

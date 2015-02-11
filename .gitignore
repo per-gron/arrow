@@ -1,9 +1,1 @@
-.redo
-build/arw
-build/compile
-build/libarw.a
-build/libgtest.a
-build/libgtest.o
-build/libgtest.d
-build/out
-build/test
+build

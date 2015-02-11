@@ -21,7 +21,7 @@
 #include "member-handle-hooks.h"
 #include "handle.h"
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace {
 
