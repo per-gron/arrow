@@ -87,14 +87,14 @@ ARW_DEFINE_STORAGE_2(
   member2
 );
 
-TEST(Circular, TypeStorage) {
+TEST(TypeStorage, Circular) {
   const auto storage = arw::storageDescriptor<Circular>();
   EXPECT_TRUE(storage != nullptr);
   EXPECT_FALSE(storage->hasArray());
   EXPECT_FALSE(storage->isBoxed());
 }
 
-TEST(StorageDescriptorGetterWithGCHooks, TypeStorage) {
+TEST(TypeStorage, StorageDescriptorGetterWithGCHooks) {
   const auto storage = arw::storageDescriptor<MockGCHooks, Circular>();
   EXPECT_TRUE(storage != nullptr);
 }
