@@ -65,6 +65,25 @@ static std::unique_ptr<SD> makeVariableSizeSD() {
     /*valuesEnd:*/static_cast<SD::Slot*>(0));
 }
 
+static std::unique_ptr<SD> makeSDWithNoSlots() {
+  return makeSD(
+    /*sizeWithEmptyArray:*/0,
+    /*hasArray:*/true,
+    /*array:*/SD::Slot(NULL, arw::HandleType::REFERENCE, 0),
+    /*valuesBegin:*/static_cast<SD::Slot*>(nullptr),
+    /*valuesEnd:*/static_cast<SD::Slot*>(nullptr));
+}
+
+static std::unique_ptr<SD> makeSDWithOneSlot() {
+  const SD::Slot slot(NULL, arw::HandleType::REFERENCE, 5);
+  return makeSD(
+    /*sizeWithEmptyArray:*/0,
+    /*hasArray:*/true,
+    /*array:*/SD::Slot(NULL, arw::HandleType::REFERENCE, 0),
+    /*valuesBegin:*/&slot,
+    /*valuesEnd:*/(&slot)+1);
+}
+
 }  // namespace
 
 
@@ -112,3 +131,52 @@ TEST(StorageDescriptor, ArrayAccessor) {
   EXPECT_EQ(sd->array().offset, 123);
   EXPECT_TRUE(sd->array().storageDescriptor->isBoxed());
 }
+
+TEST(StorageDescriptor, IterateWithNoSlots) {
+  const auto sd = makeSDWithNoSlots();
+  EXPECT_TRUE(sd->begin() == sd->end());
+  EXPECT_FALSE(sd->begin() != sd->end());
+}
+
+TEST(StorageDescriptor, IteratingWithForLoop) {
+  const auto sd = makeSDWithOneSlot();
+  size_t count = 0;
+  for (const auto &slot : *sd) {
+    count++;
+  }
+  EXPECT_EQ(count, 1);
+}
+
+TEST(StorageDescriptor, IterateAndReachEnd) {
+  const auto sd = makeSDWithOneSlot();
+  EXPECT_FALSE(sd->begin() == sd->end());
+  EXPECT_TRUE(sd->begin() != sd->end());
+
+  EXPECT_TRUE(++sd->begin() == sd->end());
+  EXPECT_FALSE(++sd->begin() != sd->end());
+}
+
+TEST(StorageDescriptor, IteratorPostIncrement) {
+  const auto sd = makeSDWithOneSlot();
+  auto it = sd->begin();
+
+  EXPECT_TRUE((it++) == sd->begin());
+  EXPECT_TRUE(it == sd->end());
+}
+
+TEST(StorageDescriptor, IteratorMemberAccess) {
+  const auto sd = makeSDWithOneSlot();
+  const auto it = sd->begin();
+  EXPECT_EQ(it->offset, 5);
+  EXPECT_EQ(it->type, arw::HandleType::REFERENCE);
+}
+
+TEST(StorageDescriptor, IteratorDereference) {
+  const auto sd = makeSDWithOneSlot();
+  const auto it = sd->begin();
+  EXPECT_EQ((*it).offset, 5);
+  EXPECT_EQ((*it).type, arw::HandleType::REFERENCE);
+}
+
+// TODO(peck): Verify that read barrier is invoked when dereferencing
+//     const_iterator and calling array().

@@ -169,6 +169,57 @@ class StorageDescriptor {
     static Slot empty;
   };
 
+  typedef Slot value_type;
+
+  /**
+   * Input iterator class for iterating over slots in a StorageDescriptor.
+   */
+  class const_iterator : public std::iterator<std::input_iterator_tag,
+                                              value_type> {
+    friend class StorageDescriptor;
+
+   public:
+    const_iterator operator++(int) {
+      const_iterator mycopy(*this);
+      ++_i;
+      return mycopy;
+    }
+
+    const_iterator& operator++() {
+      ++_i;
+      return *this;
+    }
+
+    const value_type& operator*() const {
+      return *get();
+    }
+
+    const value_type* operator->() const {
+      return get();
+    }
+
+    bool operator==(const const_iterator& other) {
+      // Potential optimization opportunity: Add equality check that doesn't
+      // compare _sd.
+      return &_sd == &other._sd && _i == other._i;
+    }
+
+    bool operator!=(const const_iterator& other) {
+      return &_sd != &other._sd || _i != other._i;
+    }
+
+   private:
+    const_iterator(const SD &sd, size_t i) :
+      _i(i), _sd(sd) {}
+
+    const value_type* get() const {
+      return reinterpret_cast<const MemberVal<Slot, GCHooks>*>(&_sd._values)[_i].get();
+    }
+
+    size_t _i;
+    const SD &_sd;
+  };
+
   /**
    * Takes an uninitialized block of memory (that must be of the size indicated
    * by the objectSize method) and initializes a StorageDescriptor object there.
@@ -250,8 +301,16 @@ class StorageDescriptor {
     return this == &boxed;
   }
 
-  inline Slot &array() {
+  inline const Slot &array() {
     return *_array;
+  }
+
+  inline const_iterator begin() const {
+    return const_iterator(*this, 0);
+  }
+
+  inline const_iterator end() const {
+    return const_iterator(*this, _numValues);
   }
 
  private:
@@ -266,7 +325,8 @@ class StorageDescriptor {
                     Iter valuesEnd)
       : _sizeWithEmptyArray(sizeWithEmptyArray),
         _hasArray(hasArray),
-        _array(array) {
+        _array(array),
+        _numValues(0) {
     size_t numValues = 0;
 
     for (; valuesBegin != valuesEnd; numValues++, valuesBegin++) {
@@ -283,17 +343,17 @@ class StorageDescriptor {
    * The size of the object, with an empty array but including the array length
    * word if it's an array object.
    */
-  size_t _sizeWithEmptyArray;
-  bool _hasArray;
+  const size_t _sizeWithEmptyArray;
+  const bool _hasArray;
   /**
    * If _hasArray is false, this value is ignored.
    */
-  MemberVal<Slot, GCHooks> _array;
-  size_t _numValues;
+  const MemberVal<Slot, GCHooks> _array;
+  const size_t _numValues;
   /**
    * This is a dummy zero-size object. Its actual size depends on _numValues.
    */
-  MemberVal<Slot[0], GCHooks> _values;
+  const MemberVal<Slot[0], GCHooks> _values;
 };
 
 template<typename GCHooks>
