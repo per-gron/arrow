@@ -41,16 +41,16 @@ add_library(gtest STATIC ${gtest_sources})
 target_include_directories(gtest PUBLIC ${gtest_include_root} ${gtest_root})
 
 set(arw_test_sources
-  test/cc/test_checks.cc
-  test/cc/test_handle.cc
-  test/cc/test_local_stack.cc
-  test/cc/test_main.cc
-  test/cc/test_member_handle_hooks.cc
-  test/cc/test_member.cc
-  test/cc/test_optional.cc
-  test/cc/test_persistent_pool.cc
-  test/cc/test_storage_descriptor.cc
-  test/cc/test_type_storage.cc)
+  test/cc/checks_test.cc
+  test/cc/handle_test.cc
+  test/cc/local_stack_test.cc
+  test/cc/main.cc
+  test/cc/member_handle_hooks_test.cc
+  test/cc/member_test.cc
+  test/cc/optional_test.cc
+  test/cc/persistent_pool_test.cc
+  test/cc/storage_descriptor_test.cc
+  test/cc/type_storage_test.cc)
 
 add_executable(arw_test ${arw_test_sources})
 target_link_libraries(arw_test arw gtest)
