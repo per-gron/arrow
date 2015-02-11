@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "storage-descriptor.h"
+#include "storage_descriptor.h"
 
 namespace {
 

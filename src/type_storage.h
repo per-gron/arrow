@@ -26,9 +26,9 @@
 #include <memory>
 
 #include "handle.h"
-#include "member-handle-hooks.h"
+#include "member_handle_hooks.h"
 #include "checks.h"
-#include "storage-descriptor.h"
+#include "storage_descriptor.h"
 
 /**
  * This file defines the arw::internal::TypeStorage class, which (as the

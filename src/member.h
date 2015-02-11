@@ -21,7 +21,7 @@
 #pragma once
 
 #include "handle.h"
-#include "member-handle-hooks.h"
+#include "member_handle_hooks.h"
 
 namespace arw {
 

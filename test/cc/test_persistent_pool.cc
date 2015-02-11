@@ -21,7 +21,7 @@
 #include <set>
 
 #include <gtest/gtest.h>
-#include "persistent-pool.h"
+#include "persistent_pool.h"
 
 typedef arw::PersistentPool<int, int> Pool;
 

@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "type-storage.h"
+#include "type_storage.h"
 
 #include "member.h"
 

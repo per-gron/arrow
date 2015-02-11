@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "member-handle-hooks.h"
+#include "member_handle_hooks.h"
 #include "handle.h"
 
 #include <gtest/gtest.h>

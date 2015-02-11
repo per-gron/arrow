@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "handle.h"
-#include "member-handle-hooks.h"
+#include "member_handle_hooks.h"
 #include "checks.h"
 
 namespace arw {
