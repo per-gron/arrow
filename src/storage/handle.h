@@ -71,22 +71,24 @@ struct HandleTypes<T, HandleType::WEAK> {
  * directly. Instead it provides a set of hooks for when the handle is created,
  * destroyed, read and written.
  *
- * Hooks is a class that is expected to have four static methods, like this:
+ * Hooks is a class that is expected to have five static methods, like this:
  *
  * template<typename T, HandleType Type>
  * struct HandleHooks {
- *   inline static void
- *   created(const Handle<T, Type, HandleHooks>* handle) {}
+ *   static void created(const Handle<T, Type, HandleHooks>* handle) {}
  *
- *   inline static void
- *   destroyed(const Handle<T, Type, HandleHooks>* handle) {}
+ *   static void destroyed(const Handle<T, Type, HandleHooks>* handle) {}
  *
- *   inline static void* read(void** ptr) {
+ *   static void* read(void** ptr) {
  *     return *ptr;
  *   }
  *
- *   inline static void write(void** ptr, void* value) {
+ *   static void write(void** ptr, void* value) {
  *     *ptr = value;
+ *   }
+ *
+ *   static void* allocate(size_t size) {
+ *     return gc_alloc(size);
  *   }
  * };
  *
@@ -108,11 +110,30 @@ struct HandleTypes<T, HandleType::WEAK> {
  * something else than the reference it was given.
  *
  * Please note that write is not invoked on handle construction.
+ *
+ * allocate is invoked by the make method (for non-value handles), that creates
+ * an object and immediately wraps it in a handle.
  */
 template<typename T, HandleType Type, typename Hooks>
 class Handle {
  private:
   typedef internal::HandleTypes<T, Type> types;
+
+  struct ValueHandleTag {};
+  struct RefHandleTag {};
+
+  template<typename... Args>
+  Handle(const ValueHandleTag &, Args&&... args)
+      : _data(std::forward<Args>(args)...) {
+    wasCreated();
+  }
+
+  template<typename... Args>
+  Handle(const RefHandleTag &, Args&&... args) : _data(
+      ::new(Hooks::allocate(sizeof(value_type))) value_type(
+          std::forward<Args>(args)...)) {
+    wasCreated();
+  }
 
  public:
   static constexpr HandleType handleType = Type;
@@ -214,8 +235,26 @@ class Handle {
   get() const {
     typedef typename std::remove_const<value_type>::type NonConstT;
     return static_cast<const pointer_type>(Hooks::read(
-      reinterpret_cast<void**>(
-        const_cast<NonConstT**>(&_data))));
+        reinterpret_cast<void**>(
+            const_cast<NonConstT**>(&_data))));
+  }
+
+  /**
+   * Constructs an object and puts it in a handle.
+   */
+  template<typename U = T, typename... Args>
+  static typename std::enable_if<HandleType::VALUE == Type,
+      Handle<U, Type, Hooks>>::type
+  make(Args&&... args) {
+    return Handle<U, Type, Hooks>(
+        ValueHandleTag(), std::forward<Args>(args)...);
+  }
+
+  template<typename U = T, typename... Args>
+  static typename std::enable_if<HandleType::VALUE != Type,
+      Handle<U, Type, Hooks>>::type
+  make(Args&&... args) {
+    return Handle<U, Type, Hooks>(RefHandleTag(), std::forward<Args>(args)...);
   }
 
   /**

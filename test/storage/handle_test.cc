@@ -70,24 +70,27 @@ class TestHandleHooks {
     return _written.count(h);
   }
 
-  inline static void
-  created(const H* handle) {
+  static void* allocate(size_t size) {
+    static T allocated_obj;
+    return &allocated_obj;
+  }
+
+  static void created(const H* handle) {
     EXPECT_EQ(0, _created.count(handle));
     _created.insert(handle);
   }
 
-  inline static void
-  destroyed(const H* handle) {
+  static void destroyed(const H* handle) {
     EXPECT_EQ(0, _destroyed.count(handle));
     _destroyed.insert(handle);
   }
 
-  inline static void* read(void** ptr) {
+  static void* read(void** ptr) {
     _read.insert(reinterpret_cast<const H*>(ptr));
     return *ptr;
   }
 
-  inline static void write(void** ptr, void* value) {
+  static void write(void** ptr, void* value) {
     _written.insert(reinterpret_cast<const H*>(ptr));
     *ptr = value;
   }
@@ -230,6 +233,25 @@ TEST(Handle, Constructor) {
     Val<int> v2(std::move(v));
     EXPECT_TRUE(ValHooks<int>::isAlive(&v));
     EXPECT_TRUE(ValHooks<int>::isAlive(&v2));
+  }
+}
+
+TEST(Handle, Make) {
+  // Value make
+  ValHooks<int>::reset();
+  {
+    auto v = Val<int>::make(1);
+    EXPECT_TRUE(ValHooks<int>::isAlive(&v));
+  }
+
+  // Reference make
+  ValHooks<int>::reset();
+  {
+    auto v = Ref<int>::make(1);
+    auto expected_pointer =
+        TestHandleHooks<int, arw::HandleType::REFERENCE>::allocate(0);
+    EXPECT_EQ(v.get(), expected_pointer);
+    EXPECT_TRUE(RefHooks<int>::isAlive(&v));
   }
 }
 
