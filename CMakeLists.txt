@@ -44,6 +44,7 @@ set(arw_test_sources
   test/main.cc
   test/storage/handle_test.cc
   test/storage/local_stack_test.cc
+  test/storage/local_test.cc
   test/storage/member_test.cc
   test/storage/optional_test.cc
   test/storage/persistent_pool_test.cc
